@@ -1,9 +1,13 @@
 """
     MENU PRINCIPAL DEL PROYECTO
+    Matemática Discreta
+    - Integrantes:
+    - Diego Fernando Patzan - 23525
+    - Aleajando Javier García García - 231136
 """
 
 def menu_principal():
-    print("----------------------------------------------------------------")
+    print("\n----------------------------------------------------------------")
     print("|                        Proyecto 01                           |")
     print("----------------------------------------------------------------")
     print("|                      Menu Principal                          |")
@@ -19,7 +23,7 @@ def menu_principal():
 """
 
 def mostrar_menu_operaciones():
-    print("----------------------------------------------------------------")
+    print("\n----------------------------------------------------------------")
     print("|                   Operaciones disponibles:                   |")
     print("|                      1. Complemento                          |")
     print("|                      2. Unión                                |")
@@ -43,7 +47,8 @@ def crear_conjuntos():
     return conjunto
 
 def crear_conjunto_universo():
-    return 0;
+    universo = [chr(i) for i in range(65, 91)]
+    return universo;
     
 
 def complemento(conjunto, universo):
@@ -90,7 +95,8 @@ def formatear(conjunto):
 
 
 def main():
-    universo = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+    universo = crear_conjunto_universo()
+    print(universo)
     conjuntos = []
 
     while True:
