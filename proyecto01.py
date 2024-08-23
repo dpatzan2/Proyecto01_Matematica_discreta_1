@@ -43,6 +43,32 @@ def generar_clave(n):
     return clave
 
 """
+    ORDENAIENTO DE CONJUNTOS
+"""
+def comparcion_conjuntos(conjunto,conjuntos):
+    # Comparar si existe algún conjunto dentro del diccionario conjuntos con el mismo tamaño que conjunto
+    coincidencias = 0
+    iteracion = 0
+    for clave, conjunto_existente in conjuntos.items():
+        iteracion += 1
+        if len(conjunto_existente) == len(conjunto):
+
+            # Comparar si la posición i del conjunto existente está en conjunto y así hasta que llegue hasta el final
+            for i in range(len(conjunto)):
+                for j in range(len(conjunto_existente)):
+                    if conjunto[i] in conjunto_existente:
+                        coincidencias += 1
+                    else:
+                        break
+            if len(conjunto_existente)==coincidencias:
+                return True
+        else:
+            iteracion=+1
+
+    if iteracion==len(conjuntos):
+        return False
+
+"""
     SELECCIÓN DE CONJUNTO PARA OPERAR
 """
 def seleccionar_conjunto(conjuntos,resultados,tipo,n):
@@ -65,6 +91,30 @@ def seleccionar_conjunto(conjuntos,resultados,tipo,n):
             else:
                 print("  * La etiqueta no existe. Vuelva a intentarlo.")
 
+
+def gestor_operacion_conjuntos(conjuntos,resultados):
+    if len(resultados) == 0:
+        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1,1)
+        seleccion1 = conjuntos[etiqueta1]
+        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1,2)
+        seleccion2 = conjuntos[etiqueta2]
+        return seleccion1,seleccion2,etiqueta1,etiqueta2
+    else:
+        mostrar = opcion_conjuntos()
+        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
+        if(mostrar==1):
+            seleccion1 = conjuntos[etiqueta1]
+        else:
+            seleccion1 = resultados[etiqueta1]
+            mostrar = opcion_conjuntos()
+            etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar,2) 
+            if(mostrar==1):
+                seleccion2 = conjuntos[etiqueta2]
+            else:
+                seleccion2 = resultados[etiqueta2]
+        return seleccion1,seleccion2,etiqueta1,etiqueta2
+
+                
 """
     GUARDAR RESULTADO
 """
@@ -136,58 +186,72 @@ def mostrar_creditos():
     print("----------------------------------------------------------------")
     print("            ¡Gracias por utilizar nuestro programa!        ")
     print("----------------------------------------------------------------\n")
-
+"""
+    CREACIÓN DE UN CONJUNTO CON VALIDACIONES DE INGRESO DE ELEMENTOS
+"""
 def crear_conjuntos():
     conjunto = []
     elementos = input("   ⮞ Ingresa los elementos del conjunto (letras A-Z, dígitos 0-9) separados por comas: ").upper()
+    #Validación para que no se pueda crear un conjunto vacío
     if "," in elementos or len(elementos)==1:
         elementos = elementos.split(",")
+        #Validaciones para elemenos no repetidos y sintaxis de entrada
         for elemento in elementos:
             elemento = elemento.strip()
             if elemento.isalnum() and len(elemento) == 1 and elemento not in conjunto:
                 conjunto.append(elemento)
             else:
-                print(f" *Elemento inválido o duplicado: {elemento}. Se omitirá.")        
-        conjunto = sorted(conjunto)
+                print(f" *Elemento inválido o duplicado: {elemento}. Se omitirá.")    
         return conjunto
     else:
         print(" * Elementos ingresados no válidos")
         return None
-
+"""
+    CREACIÓN DE CONJUNTO UNIVERSO
+"""
 def crear_conjunto_universo():
     universo = [chr(i) for i in range(65, 91)]
     universo.extend([str(i) for i in range(10)])
     return universo
-    
-
+"""
+    FUNCIÓN COMPLEMENTO DE UN CONJUNTO
+"""
 def complemento(conjunto, universo):
     conjuntoComplemento = []
     for elemento in universo:
         if elemento not in conjunto:
             conjuntoComplemento.append(elemento)
     return conjuntoComplemento
-
+"""
+    FUNCIÓN UNIÓN DE CONJUNTOS
+"""
 def union(conjunto1, conjunto2):
     conjuntoUnion = conjunto1[:]
     for elemento in conjunto2:
         if elemento not in conjuntoUnion:
             conjuntoUnion.append(elemento)
     return conjuntoUnion
-
+"""
+    FUNCIÓN INTERSECCIÓN DE CONJUNTOS
+"""
 def interseccion(conjunto1, conjunto2):
     conjuntoInterseccion = []
     for elemento in conjunto1:
         if elemento in conjunto2:
             conjuntoInterseccion.append(elemento)
     return conjuntoInterseccion
-
+"""
+    FUNCIÓN DIFERENCIA DE CONJUNTOS
+"""
 def diferencia(conjunto1, conjunto2):
     conjuntoDiferencia = []
     for elemento in conjunto1:
         if elemento not in conjunto2:
             conjuntoDiferencia.append(elemento)
     return conjuntoDiferencia
-
+"""
+    FUNCIÓN DIFERENCIA SIMÉTRICA DE CONJUNTOS
+"""
 def diferencia_simetrica(conjunto1, conjunto2):
     conjunto_diferencia_simetrica = []
     for elemento in conjunto1:
@@ -197,16 +261,21 @@ def diferencia_simetrica(conjunto1, conjunto2):
         if elemento not in conjunto1:
             conjunto_diferencia_simetrica.append(elemento)
     return conjunto_diferencia_simetrica
-
+"""
+    MOSTRAR EN FORMATO CONJUNTO EN CONSOLA
+"""
 def formatear(conjunto):
     formateado = "{" + ", ".join(conjunto) + "}"
     return formateado
-
-
+"""
+    FLUJO PRINCIPAL DEL PROGRAMA
+"""
 def main():
     universo = crear_conjunto_universo()
     print(universo)
+    #Diccionario que almacena los conjuntos contruidos
     conjuntos = {}
+    #Diccionario que almacena los resultados de las operaciones anteriores
     resultados = {}
     indice = 0
     repetido = False
@@ -214,16 +283,12 @@ def main():
         opcion = menu_principal()
         if opcion == '1':
             conjunto = crear_conjuntos()
-            for clave, lista in conjuntos.items():
-                if lista == conjunto:
-                    repetido = True
-                    break
-
-            if repetido:
+            repetido = comparcion_conjuntos(conjunto,conjuntos)
+            if repetido==True:
                 print(" * El conjunto ya se ha registrado, vuelva a intentarlo.")
-                repetido = False
             else:
                 if conjunto is not None:
+                    #Creación de etiqueta de conjunto de manera dinámica según el abecedario
                     clave = generar_clave(indice)
                     conjuntos[clave] = conjunto
                     print(f" - Conjunto creado: {clave} = {formatear(conjunto)}")
@@ -236,11 +301,13 @@ def main():
             while True:
                 operacion = mostrar_menu_operaciones()
                 if operacion == '1':
+                    #Verificación para operar resultados de conjuntos anteriores
                     if len(resultados) == 0:
                         etiqueta = seleccionar_conjunto(conjuntos,resultados,1,1)
                         seleccion= conjuntos[etiqueta]
 
                     else:
+                        #Verificación para operar los conjuntos (contruidos y resultados)
                         mostrar = opcion_conjuntos()
                         etiqueta = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
                         if(mostrar==1):
@@ -248,113 +315,49 @@ def main():
                         else:
                             seleccion= resultados[etiqueta]
                     clave_nueva = etiqueta + "'"
-                    resultado = sorted(complemento(seleccion, universo))
+                    # Realización del complemento con el UNiverso
+                    resultado = complemento(seleccion, universo)
                     resultados[clave_nueva] = resultado
                     print(f"  - {clave_nueva}: {formatear(resultado)}")
                     break
                 elif operacion == '2':
-                    if len(resultados) == 0:
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1,1)
-                        seleccion1 = conjuntos[etiqueta1]
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1,2)
-                        seleccion2 = conjuntos[etiqueta1]
-
-                    else:
-                        mostrar = opcion_conjuntos()
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
-                        if(mostrar==1):
-                            seleccion1 = conjuntos[etiqueta1]
-                        else:
-                            seleccion1 = resultados[etiqueta1]
-                        mostrar = opcion_conjuntos()
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar,2) 
-                        if(mostrar==1):
-                            seleccion2 = conjuntos[etiqueta2]
-                        else:
-                            seleccion2 = resultados[etiqueta2]
-
-                    clave_nueva = etiqueta1 + "U" + etiqueta2
-                    resultado = sorted(union(seleccion1, seleccion2))
+                    # Opciones para seleccionar los conjuntos a operar
+                    selecionado = gestor_operacion_conjuntos(conjuntos,resultados)
+                    clave_nueva = selecionado[2] + "U" + selecionado[3]
+                    # Realización de la unión
+                    resultado = union(selecionado[0], selecionado[1])
                     resultados[clave_nueva] = resultado
                     print(f"  - {clave_nueva}: {formatear(resultado)}")
                     break
                 elif operacion == '3':
-                    if len(resultados) == 0:
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1,1)
-                        seleccion1 = conjuntos[etiqueta1]
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1,2)
-                        seleccion2 = conjuntos[etiqueta1]
-                    else:
-                        mostrar = opcion_conjuntos()
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar)
-                        if(mostrar==1):
-                            seleccion1 = conjuntos[etiqueta1]
-                        else:
-                            seleccion1 = resultados[etiqueta1]
-                        mostrar = opcion_conjuntos()
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar) 
-                        if(mostrar==1):
-                            seleccion2 = conjuntos[etiqueta2]
-                        else:
-                            seleccion2 = resultados[etiqueta2]
-                    clave_nueva = etiqueta1 + "∩" + etiqueta2
-                    resultado = sorted(interseccion(seleccion1, seleccion2))
+                    # Opciones para seleccionar los conjuntos a operar
+                    selecionado = gestor_operacion_conjuntos(conjuntos,resultados)
+                    clave_nueva = selecionado[2] + "∩" + selecionado[3]
+                    # Realización de la intersección
+                    resultado = interseccion(selecionado[0], selecionado[1])
                     resultados[clave_nueva] = resultado
                     print(f"  - {clave_nueva}: {formatear(resultado)}")
                     break
                 elif operacion == '4':
-                    if len(resultados) == 0:
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1,1)
-                        seleccion1 = conjuntos[etiqueta1]
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1,2)
-                        seleccion2 = conjuntos[etiqueta1]
-
-                    else:
-                        mostrar = opcion_conjuntos()
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
-                        if(mostrar==1):
-                            seleccion1 = conjuntos[etiqueta1]
-                        else:
-                            seleccion1 = resultados[etiqueta1]
-                        mostrar = opcion_conjuntos()
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar,2) 
-                        if(mostrar==1):
-                            seleccion2 = conjuntos[etiqueta2]
-                        else:
-                            seleccion2 = resultados[etiqueta2]
-                    clave_nueva = etiqueta1 + "-" + etiqueta2
-                    resultado = sorted(diferencia(seleccion1, seleccion2))
+                    # Opciones para seleccionar los conjuntos a operar
+                    selecionado = gestor_operacion_conjuntos(conjuntos,resultados)
+                    clave_nueva = selecionado[2] + "-" + selecionado[3]
+                    # Realización de la diferencia
+                    resultado = diferencia(selecionado[0], selecionado[1])
                     resultados[clave_nueva] = resultado
                     print(f"  - {clave_nueva}: {formatear(resultado)}")
                     break
                 elif operacion == '5':
-                    if len(resultados) == 0:
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1,1)
-                        seleccion1 = conjuntos[etiqueta1]
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1,2)
-                        seleccion2 = conjuntos[etiqueta1]
-
-                    else:
-                        mostrar = opcion_conjuntos()
-                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
-                        if(mostrar==1):
-                            seleccion1 = conjuntos[etiqueta1]
-                        else:
-                            seleccion1 = resultados[etiqueta1]
-                        mostrar = opcion_conjuntos()
-                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar,2) 
-                        if(mostrar==1):
-                            seleccion2 = conjuntos[etiqueta2]
-                        else:
-                            seleccion2 = resultados[etiqueta2]
-                    clave_nueva = etiqueta1 + "Δ" + etiqueta2
-                    resultado = sorted(diferencia_simetrica(seleccion1, seleccion2))
+                    # Opciones para seleccionar los conjuntos a operar
+                    selecionado = gestor_operacion_conjuntos(conjuntos,resultados)
+                    clave_nueva = selecionado[2] + "Δ" + selecionado[3]
+                    # Realizacion de la diferenccia simétrica
+                    resultado = diferencia_simetrica(selecionado[0], selecionado[1])
                     resultados[clave_nueva] = resultado
                     print(f"  - {clave_nueva}: {formatear(resultado)}")
                     break
                 elif operacion == '6':
                     break
-
                 else:
                     print(" * Operación no válida, por favor intenta de nuevo.")
 
@@ -370,7 +373,9 @@ def main():
             mostrar_creditos()
             break
 
-
         else:
-            print("Opción no válida, por favor intenta de nuevo.")
+            print("  * Opción no válida, por favor intenta de nuevo.")
+"""
+    INICIALIZACIÓN DEL PROGRAMA MEDIANTE FUNCIÓN MAIN
+"""
 main()    
