@@ -18,6 +18,17 @@ def mostrar_conjuntos_actuales(conjuntos):
         print(f"   {clave}: {formatear(conjunto)}")
     print("----------------------------------------------------------------")
 
+"""
+    MOSTRAR RESULTADOS
+"""
+def mostrar_resultados_actuales(resultados):
+    print("\n----------------------------------------------------------------")
+    print("|                   Resultado de Conjuntos                      |")
+    print("----------------------------------------------------------------")
+    for clave, resultado in resultados.items():
+        print(f"   {clave}: {formatear(resultado)}")
+    print("----------------------------------------------------------------")
+
 
 """
     CÓDIGO PARA GENERAR CLAVES DE DICCIONARIO
@@ -33,15 +44,13 @@ def generar_clave(n):
     SELECCIÓN DE CONJUNTO PARA OPERAR
 """
 def seleccionar_conjunto(conjuntos):
-    mostrar_conjuntos_actuales()
-
-
     while True:
+        mostrar_conjuntos_actuales(conjuntos)
         etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper()
         if etiqueta in conjuntos:
-            return conjuntos[etiqueta]
+            return etiqueta
         else:
-            return None
+            print(" * La etiqueta no existe. Volviendo al menú principal.")
 
 """
     GUARDAR RESULTADO
@@ -183,12 +192,11 @@ def main():
     universo = crear_conjunto_universo()
     print(universo)
     conjuntos = {}
-    selecciones = []
+    resultados = {}
     indice = 0
     repetido = False
     while True:
         opcion = menu_principal()
-
         if opcion == '1':
             conjunto = crear_conjuntos()
             for clave, lista in conjuntos.items():
@@ -206,7 +214,6 @@ def main():
                     print(f" - Conjunto creado: {clave} = {formatear(conjunto)}")
                     indice += 1
 
-
         elif opcion == '2':
             if len(conjuntos) == 0:
                 print(" * Debe crear al menos un conjunto para realizar operaciones.")
@@ -217,23 +224,56 @@ def main():
             while True:
                 operacion = mostrar_menu_operaciones()
                 if operacion == '1':
+                    etiqueta = seleccionar_conjunto(conjuntos)
+                    seleccion= conjuntos[etiqueta]
+                    clave_nueva = etiqueta + "'"
                     resultado = complemento(seleccion, universo)
+                    resultados[clave_nueva] = resultado
+                    mostrar_resultados_actuales(resultados)
                     print(f"Complemento: {formatear(resultado)}")
 
                 elif operacion == '2': 
-                    resultado = union(conjuntos[0], conjuntos[1])
+                    etiqueta1 = seleccionar_conjunto(conjuntos)
+                    etiqueta2 = seleccionar_conjunto(conjuntos)
+                    seleccion1 = conjuntos[etiqueta1]
+                    seleccion2 = conjuntos[etiqueta2]
+                    clave_nueva = etiqueta1 + "U" + etiqueta2
+                    resultado = union(seleccion1, seleccion2)
+                    resultados[clave_nueva] = resultado
+                    mostrar_resultados_actuales(resultados)
                     print(f"Unión: {resultado}")
 
                 elif operacion == '3':
-                    resultado = interseccion(conjuntos[0], conjuntos[1])
+                    etiqueta1 = seleccionar_conjunto(conjuntos)
+                    etiqueta2 = seleccionar_conjunto(conjuntos)
+                    seleccion1 = conjuntos[etiqueta1]
+                    seleccion2 = conjuntos[etiqueta2]
+                    clave_nueva = etiqueta1 + "∩" + etiqueta2
+                    resultado = interseccion(seleccion1, seleccion2)
+                    resultados[clave_nueva] = resultado
+                    mostrar_resultados_actuales(resultados)
                     print(f"Intersección: {formatear(resultado)}")
 
                 elif operacion == '4':
-                    resultado = diferencia(conjuntos[0], conjuntos[1])
+                    etiqueta1 = seleccionar_conjunto(conjuntos)
+                    etiqueta2 = seleccionar_conjunto(conjuntos)
+                    seleccion1 = conjuntos[etiqueta1]
+                    seleccion2 = conjuntos[etiqueta2]
+                    clave_nueva = etiqueta1 + "-" + etiqueta2
+                    resultado = diferencia(seleccion1, seleccion2)
+                    resultados[clave_nueva] = resultado
+                    mostrar_resultados_actuales(resultados)
                     print(f"Diferencia: {formatear(resultado)}")
 
                 elif operacion == '5':
-                    resultado = diferencia_simetrica(conjuntos[0], conjuntos[1])
+                    etiqueta1 = seleccionar_conjunto(conjuntos)
+                    etiqueta2 = seleccionar_conjunto(conjuntos)
+                    seleccion1 = conjuntos[etiqueta1]
+                    seleccion2 = conjuntos[etiqueta2]
+                    clave_nueva = etiqueta1 + "Δ" + etiqueta2
+                    resultado = diferencia_simetrica(seleccion1, seleccion2)
+                    resultados[clave_nueva] = resultado
+                    mostrar_resultados_actuales(resultados)
                     print(f"Diferencia Simétrica: {formatear(resultado)}")
 
                 elif operacion == '6':
