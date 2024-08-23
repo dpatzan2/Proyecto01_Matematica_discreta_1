@@ -22,12 +22,15 @@ def mostrar_conjuntos_actuales(conjuntos):
     MOSTRAR RESULTADOS
 """
 def mostrar_resultados_actuales(resultados):
-    print("\n----------------------------------------------------------------")
+    print("\n\n----------------------------------------------------------------")
     print("|                   Resultado de Conjuntos                      |")
     print("----------------------------------------------------------------")
     for clave, resultado in resultados.items():
         print(f"   {clave}: {formatear(resultado)}")
     print("----------------------------------------------------------------")
+    print(" *Recordatorio*")
+    print("  - ∩  (Intersección): Puede copiar y pegar el símbolo o usar Alt + 8745")
+    print("  - ∆  (Delta)        : Puede copiar y pegar el símbolo o usar Alt + 30")
 
 
 """
@@ -43,34 +46,43 @@ def generar_clave(n):
 """
     SELECCIÓN DE CONJUNTO PARA OPERAR
 """
-def seleccionar_conjunto(conjuntos):
-    while True:
-        mostrar_conjuntos_actuales(conjuntos)
-        etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper()
-        if etiqueta in conjuntos:
-            return etiqueta
-        else:
-            print(" * La etiqueta no existe. Volviendo al menú principal.")
+def seleccionar_conjunto(conjuntos,resultados,tipo):
+    if tipo == 1:
+        while True:
+            mostrar_conjuntos_actuales(conjuntos)
+            etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper()
+            if etiqueta in conjuntos:
+                return etiqueta
+            else:
+                print("  * La etiqueta no existe. Vuelva a intentarlo.")
+    elif tipo == 2:
+        while True:
+            mostrar_resultados_actuales(resultados)
+            etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper()
+            if etiqueta in resultados:
+                return etiqueta
+            else:
+                print("  * La etiqueta no existe. Vuelva a intentarlo.")
 
 """
     GUARDAR RESULTADO
 """
-def preguntar_guardar_conjunto(resultado, conjuntos):
+def opcion_conjuntos():
     while True:
-        print("\n¿Desea guardar el conjunto resultante?")
-        print("1. Sí")
-        print("2. No")
-        opcion = input("Selecciona una opción: ").strip()
+        print("\n\n--------------------------------------------------------------")
+        print("|         ¿Con qué conjuntos desea hacer la operación?         |")
+        print("----------------------------------------------------------------")
+        print("|               1. Conjuntos contruidos                        |")
+        print("|              2. Conjuntos de resultados anteriores           |")
+        print("----------------------------------------------------------------")
+        opcion = input(" - Seleccione una opción: ").strip()
 
         if opcion == '1':
-            conjuntos.append(resultado)
-            print(f"Conjunto guardado: {formatear(resultado)}")
-            return resultado
+            return 1
         elif opcion == '2':
-            print("El conjunto no se ha guardado.")
-            break
+            return 2
         else:
-            print("Opción no válida. Por favor, selecciona '1' para Sí o '2' para No.")
+            print("Opción no válida. Por favor, vuelva a intentarlo.")
 
 """
     MENU PRINCIPAL DEL PROYECTO
@@ -92,8 +104,9 @@ def menu_principal():
 """
 
 def mostrar_menu_operaciones():
-    print("\n----------------------------------------------------------------")
+    print("\n\n----------------------------------------------------------------")
     print("|                   Operaciones disponibles:                   |")
+    print("----------------------------------------------------------------")
     print("|                      1. Complemento                          |")
     print("|                      2. Unión                                |")
     print("|                      3. Intersección                         |")
@@ -218,60 +231,126 @@ def main():
             if len(conjuntos) == 0:
                 print(" * Debe crear al menos un conjunto para realizar operaciones.")
                 continue
-
-            mostrar_conjuntos_actuales(conjuntos)
-
             while True:
                 operacion = mostrar_menu_operaciones()
                 if operacion == '1':
-                    etiqueta = seleccionar_conjunto(conjuntos)
-                    seleccion= conjuntos[etiqueta]
+                    if len(resultados) == 0:
+                        etiqueta = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion= conjuntos[etiqueta]
+
+                    else:
+                        mostrar = opcion_conjuntos()
+                        etiqueta = seleccionar_conjunto(conjuntos,resultados,mostrar)
+                        if(mostrar==1):
+                            seleccion = conjuntos[etiqueta]
+                        else:
+                            seleccion= resultados[etiqueta]
                     clave_nueva = etiqueta + "'"
-                    resultado = complemento(seleccion, universo)
+                    resultado = sorted(complemento(seleccion, universo))
                     resultados[clave_nueva] = resultado
                     mostrar_resultados_actuales(resultados)
                     print(f"Complemento: {formatear(resultado)}")
 
-                elif operacion == '2': 
-                    etiqueta1 = seleccionar_conjunto(conjuntos)
-                    etiqueta2 = seleccionar_conjunto(conjuntos)
-                    seleccion1 = conjuntos[etiqueta1]
-                    seleccion2 = conjuntos[etiqueta2]
+                elif operacion == '2':
+                    if len(resultados) == 0:
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion1 = conjuntos[etiqueta1]
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion2 = conjuntos[etiqueta1]
+
+                    else:
+                        mostrar = opcion_conjuntos()
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar)
+                        if(mostrar==1):
+                            seleccion1 = conjuntos[etiqueta1]
+                        else:
+                            seleccion1 = resultados[etiqueta1]
+                        mostrar = opcion_conjuntos()
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar) 
+                        if(mostrar==1):
+                            seleccion2 = conjuntos[etiqueta2]
+                        else:
+                            seleccion2 = resultados[etiqueta2]
+
                     clave_nueva = etiqueta1 + "U" + etiqueta2
-                    resultado = union(seleccion1, seleccion2)
+                    resultado = sorted(union(seleccion1, seleccion2))
                     resultados[clave_nueva] = resultado
                     mostrar_resultados_actuales(resultados)
                     print(f"Unión: {resultado}")
 
                 elif operacion == '3':
-                    etiqueta1 = seleccionar_conjunto(conjuntos)
-                    etiqueta2 = seleccionar_conjunto(conjuntos)
-                    seleccion1 = conjuntos[etiqueta1]
-                    seleccion2 = conjuntos[etiqueta2]
+                    if len(resultados) == 0:
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion1 = conjuntos[etiqueta1]
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion2 = conjuntos[etiqueta1]
+                    else:
+                        mostrar = opcion_conjuntos()
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar)
+                        if(mostrar==1):
+                            seleccion1 = conjuntos[etiqueta1]
+                        else:
+                            seleccion1 = resultados[etiqueta1]
+                        mostrar = opcion_conjuntos()
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar) 
+                        if(mostrar==1):
+                            seleccion2 = conjuntos[etiqueta2]
+                        else:
+                            seleccion2 = resultados[etiqueta2]
                     clave_nueva = etiqueta1 + "∩" + etiqueta2
-                    resultado = interseccion(seleccion1, seleccion2)
+                    resultado = sorted(interseccion(seleccion1, seleccion2))
                     resultados[clave_nueva] = resultado
                     mostrar_resultados_actuales(resultados)
                     print(f"Intersección: {formatear(resultado)}")
 
                 elif operacion == '4':
-                    etiqueta1 = seleccionar_conjunto(conjuntos)
-                    etiqueta2 = seleccionar_conjunto(conjuntos)
-                    seleccion1 = conjuntos[etiqueta1]
-                    seleccion2 = conjuntos[etiqueta2]
+                    if len(resultados) == 0:
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion1 = conjuntos[etiqueta1]
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion2 = conjuntos[etiqueta1]
+
+                    else:
+                        mostrar = opcion_conjuntos()
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar)
+                        if(mostrar==1):
+                            seleccion1 = conjuntos[etiqueta1]
+                        else:
+                            seleccion1 = resultados[etiqueta1]
+                        mostrar = opcion_conjuntos()
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar) 
+                        if(mostrar==1):
+                            seleccion2 = conjuntos[etiqueta2]
+                        else:
+                            seleccion2 = resultados[etiqueta2]
                     clave_nueva = etiqueta1 + "-" + etiqueta2
-                    resultado = diferencia(seleccion1, seleccion2)
+                    resultado = sorted(diferencia(seleccion1, seleccion2))
                     resultados[clave_nueva] = resultado
                     mostrar_resultados_actuales(resultados)
                     print(f"Diferencia: {formatear(resultado)}")
 
                 elif operacion == '5':
-                    etiqueta1 = seleccionar_conjunto(conjuntos)
-                    etiqueta2 = seleccionar_conjunto(conjuntos)
-                    seleccion1 = conjuntos[etiqueta1]
-                    seleccion2 = conjuntos[etiqueta2]
+                    if len(resultados) == 0:
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion1 = conjuntos[etiqueta1]
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,1)
+                        seleccion2 = conjuntos[etiqueta1]
+
+                    else:
+                        mostrar = opcion_conjuntos()
+                        etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar)
+                        if(mostrar==1):
+                            seleccion1 = conjuntos[etiqueta1]
+                        else:
+                            seleccion1 = resultados[etiqueta1]
+                        mostrar = opcion_conjuntos()
+                        etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar) 
+                        if(mostrar==1):
+                            seleccion2 = conjuntos[etiqueta2]
+                        else:
+                            seleccion2 = resultados[etiqueta2]
                     clave_nueva = etiqueta1 + "Δ" + etiqueta2
-                    resultado = diferencia_simetrica(seleccion1, seleccion2)
+                    resultado = sorted(diferencia_simetrica(seleccion1, seleccion2))
                     resultados[clave_nueva] = resultado
                     mostrar_resultados_actuales(resultados)
                     print(f"Diferencia Simétrica: {formatear(resultado)}")
