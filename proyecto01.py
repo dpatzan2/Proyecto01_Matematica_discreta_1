@@ -5,6 +5,10 @@
     -Integrantes:
     - Diego Fernando Patzan Marroquín - 23525
     - Aleajando Javier García García - 231136
+    - Descripción: 
+    Este programa en Python permite la creación, almacenamiento 
+    y manipulación de conjuntos, realizando operaciones como;unión, 
+    intersección, diferencia, complemento y diferencia simétrica. 
 """
 
 """
