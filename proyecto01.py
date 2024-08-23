@@ -1,21 +1,81 @@
 """
-    MENU PRINCIPAL DEL PROYECTO
-    Matemática Discreta
-    - Integrantes:
-    - Diego Fernando Patzan - 23525
+    Universidad del Valle de Guatemala 
+    Curso: Matemática Discreta
+    Catedrático: Ingeniero Mario Castillo
+    -Integrantes:
+    - Diego Fernando Patzan Marroquín - 23525
     - Aleajando Javier García García - 231136
 """
 
-def menu_principal():
+"""
+    MOSTRAR CONJUNTOS DE DICCIONARIO
+"""
+def mostrar_conjuntos_actuales(conjuntos):
     print("\n----------------------------------------------------------------")
-    print("|                        Proyecto 01                           |")
+    print("|                    Conjuntos actuales                         |")
     print("----------------------------------------------------------------")
-    print("|                      Menu Principal                          |")
-    print("|                 1. Construir conjuntos                       |")
-    print("|                 2. Operar conjuntos                          |")
-    print("|                 3. Finalizar programa                        |")
+    for clave, conjunto in conjuntos.items():
+        print(f"   {clave}: {formatear(conjunto)}")
     print("----------------------------------------------------------------")
-    opcion = input("Selecciona una opción: ")
+
+
+"""
+    CÓDIGO PARA GENERAR CLAVES DE DICCIONARIO
+"""
+def generar_clave(n):
+    clave = ''
+    while n >= 0:
+        clave = chr(65 + (n % 26)) + clave
+        n = n // 26 - 1
+    return clave
+
+"""
+    SELECCIÓN DE CONJUNTO PARA OPERAR
+"""
+def seleccionar_conjunto(conjuntos):
+    mostrar_conjuntos_actuales()
+
+
+    while True:
+        etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper()
+        if etiqueta in conjuntos:
+            return conjuntos[etiqueta]
+        else:
+            return None
+
+"""
+    GUARDAR RESULTADO
+"""
+def preguntar_guardar_conjunto(resultado, conjuntos):
+    while True:
+        print("\n¿Desea guardar el conjunto resultante?")
+        print("1. Sí")
+        print("2. No")
+        opcion = input("Selecciona una opción: ").strip()
+
+        if opcion == '1':
+            conjuntos.append(resultado)
+            print(f"Conjunto guardado: {formatear(resultado)}")
+            return resultado
+        elif opcion == '2':
+            print("El conjunto no se ha guardado.")
+            break
+        else:
+            print("Opción no válida. Por favor, selecciona '1' para Sí o '2' para No.")
+
+"""
+    MENU PRINCIPAL DEL PROYECTO
+"""
+def menu_principal():
+    print("\n--------------------------------------------------------------")
+    print("|                   Proyecto 01 - Conjuntos                    |")
+    print("----------------------------------------------------------------")
+    print("|                       Menu Principal                         |")
+    print("|                  1. Construir conjuntos                      |")
+    print("|                  2. Operar conjuntos                         |")
+    print("|                  3. Finalizar programa                       |")
+    print("----------------------------------------------------------------")
+    opcion = input(" - Selecciona una opción: ")
     return opcion
 
 """
@@ -32,23 +92,48 @@ def mostrar_menu_operaciones():
     print("|                      5. Diferencia Simétrica                 |")
     print("|                      6. Regresar al menú principal           |")
     print("----------------------------------------------------------------")
-    opcion = input("Selecciona una operación: ")
+    opcion = input(" - Selecciona una operación: ")
     return opcion
+
+"""
+    FINALIZACIÓN Y CRÉDITOS DEL PROGRAMA
+"""
+def mostrar_creditos():
+    print("\n----------------------------------------------------------------")
+    print("|                       Fin del programa                        |")
+    print("----------------------------------------------------------------")
+    print("|          Universidad del Valle de Guatemala                   |")
+    print("|          Curso: Matemática Discreta                           |")
+    print("|          Catedrático: Ingeniero Mario Castillo                |")
+    print("|                                                               |")
+    print("|          -Integrantes del proyecto:                           |")
+    print("|             - Diego Fernando Patzan Marroquín - 23525         |")
+    print("|             - Alejandro Javier García García - 231136         |")
+    print("----------------------------------------------------------------")
+    print("            ¡Gracias por utilizar nuestro programa!        ")
+    print("----------------------------------------------------------------\n")
 
 def crear_conjuntos():
     conjunto = []
-    elementos = input("Ingresa los elementos del conjunto (letras A-Z, dígitos 0-9) separados por comas: ").upper().split(',')
-    for elemento in elementos:
-        elemento = elemento.strip()
-        if elemento.isalnum() and len(elemento) == 1 and elemento not in conjunto:
-            conjunto.append(elemento)
-        else:
-            print(f"Elemento inválido o duplicado: {elemento}. Se omitirá.")
-    return conjunto
+    elementos = input("   ⮞ Ingresa los elementos del conjunto (letras A-Z, dígitos 0-9) separados por comas: ").upper()
+    if "," in elementos or len(elementos)==1:
+        elementos = elementos.split(",")
+        for elemento in elementos:
+            elemento = elemento.strip()
+            if elemento.isalnum() and len(elemento) == 1 and elemento not in conjunto:
+                conjunto.append(elemento)
+            else:
+                print(f" *Elemento inválido o duplicado: {elemento}. Se omitirá.")        
+        conjunto = sorted(conjunto)
+        return conjunto
+    else:
+        print(" * Elementos ingresados no válidos")
+        return None
 
 def crear_conjunto_universo():
     universo = [chr(i) for i in range(65, 91)]
-    return universo;
+    universo.extend([str(i) for i in range(10)])
+    return universo
     
 
 def complemento(conjunto, universo):
@@ -97,30 +182,45 @@ def formatear(conjunto):
 def main():
     universo = crear_conjunto_universo()
     print(universo)
-    conjuntos = []
-
+    conjuntos = {}
+    selecciones = []
+    indice = 0
+    repetido = False
     while True:
         opcion = menu_principal()
 
         if opcion == '1':
             conjunto = crear_conjuntos()
-            conjuntos.append(conjunto)
-            print (f"Conjunto creado: {formatear(conjunto)}")
+            for clave, lista in conjuntos.items():
+                if lista == conjunto:
+                    repetido = True
+                    break
+
+            if repetido:
+                print(" * El conjunto ya se ha registrado, vuelva a intentarlo.")
+                repetido = False
+            else:
+                if conjunto is not None:
+                    clave = generar_clave(indice)
+                    conjuntos[clave] = conjunto
+                    print(f" - Conjunto creado: {clave} = {formatear(conjunto)}")
+                    indice += 1
+
 
         elif opcion == '2':
-            if len(conjuntos) < 2:
-                print("Debe crear al menos dos conjuntos para realizar operaciones.")
+            if len(conjuntos) == 0:
+                print(" * Debe crear al menos un conjunto para realizar operaciones.")
                 continue
+
+            mostrar_conjuntos_actuales(conjuntos)
 
             while True:
                 operacion = mostrar_menu_operaciones()
-
                 if operacion == '1':
-                    conjunto = conjuntos[int(input("Selecciona el índice del conjunto (1 o 2): ")) - 1]
-                    resultado = complemento(conjunto, universo)
+                    resultado = complemento(seleccion, universo)
                     print(f"Complemento: {formatear(resultado)}")
 
-                elif operacion == '2':
+                elif operacion == '2': 
                     resultado = union(conjuntos[0], conjuntos[1])
                     print(f"Unión: {resultado}")
 
@@ -140,15 +240,12 @@ def main():
                     break
 
                 else:
-                    print("Operación no válida, por favor intenta de nuevo.")
+                    print(" * Operación no válida, por favor intenta de nuevo.")
 
         elif opcion == '3':
-            print("Fin del programa.")
+            mostrar_creditos()
             break
 
         else:
             print("Opción no válida, por favor intenta de nuevo.")
-
-
-
 main()    
