@@ -51,19 +51,18 @@ def generar_clave(n):
 """
 def comparcion_conjuntos(conjunto,conjuntos):
     # Comparar si existe algún conjunto dentro del diccionario conjuntos con el mismo tamaño que conjunto
+    if conjunto is None:
+        return False
     coincidencias = 0
     iteracion = 0
     for clave, conjunto_existente in conjuntos.items():
-        iteracion += 1
         if len(conjunto_existente) == len(conjunto):
-
             # Comparar si la posición i del conjunto existente está en conjunto y así hasta que llegue hasta el final
             for i in range(len(conjunto)):
-                for j in range(len(conjunto_existente)):
-                    if conjunto[i] in conjunto_existente:
-                        coincidencias += 1
-                    else:
-                        break
+                if conjunto[i] in conjunto_existente:
+                    coincidencias += 1
+                else:
+                    return False
             if len(conjunto_existente)==coincidencias:
                 return True
         else:
@@ -80,7 +79,7 @@ def seleccionar_conjunto(conjuntos,resultados,tipo,n):
         while True:
             mostrar_conjuntos_actuales(conjuntos)
             print(f" - Conjunto #{n}:")
-            etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper().strip()
+            etiqueta = input(" ⮞ Ingrese la etiqueta del conjunto que desea operar: ").upper().strip()
             if etiqueta in conjuntos:
                 return etiqueta
             else:
@@ -89,7 +88,7 @@ def seleccionar_conjunto(conjuntos,resultados,tipo,n):
         while True:
             mostrar_resultados_actuales(resultados)
             print(f" - Conjunto #{n}:")
-            etiqueta = input(" ⮞ Ingresa la etiqueta del conjunto que desea operar: ").upper().strip()
+            etiqueta = input(" ⮞ Ingrese la etiqueta del conjunto que desea operar: ").upper().strip()
             if etiqueta in resultados:
                 return etiqueta
             else:
@@ -108,6 +107,12 @@ def gestor_operacion_conjuntos(conjuntos,resultados):
         etiqueta1 = seleccionar_conjunto(conjuntos,resultados,mostrar,1)
         if(mostrar==1):
             seleccion1 = conjuntos[etiqueta1]
+            mostrar = opcion_conjuntos()
+            etiqueta2 = seleccionar_conjunto(conjuntos,resultados,mostrar,2) 
+            if(mostrar==1):
+                seleccion2 = conjuntos[etiqueta2]
+            else:
+                seleccion2 = resultados[etiqueta2]
         else:
             seleccion1 = resultados[etiqueta1]
             mostrar = opcion_conjuntos()
@@ -137,7 +142,7 @@ def opcion_conjuntos():
         elif opcion == '2':
             return 2
         else:
-            print("Opción no válida. Por favor, vuelva a intentarlo.")
+            print("  * Opción no válida. Por favor, vuelva a intentarlo.")
 
 """
     MENU PRINCIPAL DEL PROYECTO
@@ -149,10 +154,10 @@ def menu_principal():
     print("|                       Menu Principal                         |")
     print("|                  1. Construir conjuntos                      |")
     print("|                  2. Operar conjuntos                         |")
-    print("|                  3. Mostrar todo los conjuntos                       |")
+    print("|                  3. Mostrar todo los conjuntos               |")
     print("|                  4. Finalizar programa                       |")
     print("----------------------------------------------------------------")
-    opcion = input(" - Selecciona una opción: ")
+    opcion = input(" - Seleccione una opción: ")
     return opcion
 
 """
@@ -170,7 +175,7 @@ def mostrar_menu_operaciones():
     print("|                      5. Diferencia Simétrica                 |")
     print("|                      6. Regresar al menú principal           |")
     print("----------------------------------------------------------------")
-    opcion = input(" - Selecciona una operación: ")
+    opcion = input(" - Seleccione una operación: ")
     return opcion
 
 """
@@ -195,9 +200,9 @@ def mostrar_creditos():
 """
 def crear_conjuntos():
     conjunto = []
-    elementos = input("   ⮞ Ingresa los elementos del conjunto (letras A-Z, dígitos 0-9) separados por comas: ").upper()
+    elementos = input("   ⮞ Ingrese los elementos del conjunto (letras A-Z, dígitos 0-9) separados por comas: ").upper()
     #Validación para que no se pueda crear un conjunto vacío
-    if "," in elementos or len(elementos)==1:
+    if "," in elementos or len(elementos)==1 and elementos!=" ":
         elementos = elementos.split(",")
         #Validaciones para elemenos no repetidos y sintaxis de entrada
         for elemento in elementos:
@@ -276,7 +281,6 @@ def formatear(conjunto):
 """
 def main():
     universo = crear_conjunto_universo()
-    print(universo)
     #Diccionario que almacena los conjuntos contruidos
     conjuntos = {}
     #Diccionario que almacena los resultados de las operaciones anteriores
@@ -363,7 +367,7 @@ def main():
                 elif operacion == '6':
                     break
                 else:
-                    print(" * Operación no válida, por favor intenta de nuevo.")
+                    print(" * Operación no válida, por favor intente de nuevo.")
 
         elif opcion == '3':
             if len(conjuntos) ==0 and len(resultados) ==0:
